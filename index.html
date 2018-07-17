@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Giphy</title>
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" />
+</head>
+
+<body>
+  <h1>Welcome to Comedians Gifs!</h1>
+  <!-- <br> -->
+  <hr>
+  <div id="buttons"></div>
+  <!-- <br> -->
+  <hr>
+  <label for="">Add Button</label>
+  <br>
+  <input type="text" id="userSearch" placeholder="John Candy">
+  <button id="search">Add</button>
+  <hr>
+  <!-- <div id="images"></div> -->
+  <span id="images"></span>
+</body>
+
+<script>
+  $(document).ready(function () {
+    // Array of comedians
+    var comedians = ["Jim Carrey", "Russell Peters", "Brent", "Mike Myers", "MIke MacDonald", "Jeremy Hotz", "Howie Mandel", "Eugene Levy", "Rick Mercer", "Dan Aykroyd"]
+
+    // Code to create a button for each string of comedians through array.
+    for (i = 0; i < comedians.length; i++) {
+      var comediansButtons = $("<button>");
+      comediansButtons.addClass("button-styles button-clicked")
+      comediansButtons.attr("data-comediansbuttons", comedians[i]);
+      comediansButtons.text(comedians[i]);
+      $("#buttons").append(comediansButtons);
+    }
+
+    //Code to capture the users input and store in a button.
+    $("#search").on("click", function (event) {
+      var userInput = $("#userSearch").val();
+      var newButton = userInput;
+      newButton = $("<button>");
+      newButton.addClass("button-styles button-clicked");
+      newButton.attr("data-comediansbuttons", userInput);
+      newButton.text(userInput);
+      $("#buttons").append(newButton);
+      // Clear absolutely everything stored in localStorage using localStorage.clear()
+      // localStorage.clear();
+
+      // Store the username into localStorage using "localStorage.setItem"
+      // localStorage.setItem("newButton", newButton);
+      // localStorage.setItem("newButton", userInput);
+
+      // And display that name for the user using "localStorage.getItem"
+      // $("#buttons").text(localStorage.getItem("newButton"));
+    });
+
+    //Code for when a user click on an comedians button, we can console log the contnets.
+    $("body").on("click", ".button-clicked", function (event) {
+      var buttonClicked = $(this).attr("data-comediansbuttons");
+      var api_key = "NOEiCFnDenDCeb2OXmBMPWsJOgoWiXkg";
+
+      var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + buttonClicked + "&api_key=" + api_key + "&limit=10";
+
+      $.ajax({
+        url: queryURL,
+        method: "GET"
+      }).then(function (response) {
+        var results = response.data
+        // console.log(results);
+        for (var i = 0; i < results.length; i++) {
+          // Code to get the gif and rating and place them in html
+          // var gifGallery = $("<div>");
+          var gifGallery = $("<span>");
+          var rating = results[i].rating;
+          var p = $("<p class='rating'>").text("Rating: " + rating);
+          var still = (results[i].images.fixed_height_still.url);
+          var animated = (results[i].images.fixed_height.url);
+          var gifImage = $("<img>").attr("src", still);
+          gifImage.attr("data-still", still);
+          gifImage.attr("data-animate", animated);
+          gifImage.attr("data-state", "still");
+          gifImage.addClass("state-change");
+          gifGallery.prepend(gifImage);
+          gifGallery.prepend(p);
+          $("#images").prepend(gifGallery);
+        }
+        // Code to play or pause an image
+        $(".state-change").on("click", function () {
+          var state = $(this).attr("data-state");
+          if (state === "still") {
+            $(this).attr("src", $(this).attr("data-animate"));
+            $(this).attr("data-state", "data-animate");
+          } else {
+            $(this).attr("src", $(this).attr("data-still"));
+            $(this).attr("data-state", "data-still");
+          }
+        });
+      });
+    });
+
+
+  });
+  // By default (upon load) show the name stored in localStorage using "localStorage.getItem"
+  // $("#buttons").text(localStorage.getItem("newButton"));
+
+</script>
+
+
+</html>
