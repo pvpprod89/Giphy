@@ -98,4 +98,6 @@ label {
   background-color: #50c878;
   display: inline-block;
   position: absolute;
+  /* right: auto; */
+  text-align: center;
 }
